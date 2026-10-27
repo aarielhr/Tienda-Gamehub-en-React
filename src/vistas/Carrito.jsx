@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ElementoCarrito from '../componentes/ElementoCarrito.jsx';
-import ResumenOrden from '../componentes/ResumenOrden.jsx';
+import ResumenCarrito from '../componentes/ResumenCarrito.jsx';
 import { usarCarrito } from '../contexto/ProveedorCarrito.jsx';
 import { aplicarCupon } from '../servicios/servicioCarrito.js';
 import { obtenerCupon } from '../servicios/almacenamiento.js';
@@ -55,7 +55,7 @@ export default function Carrito() {
               {mensajeCupon && <p className={`mt-2 mb-0 ${errorCupon ? 'text-danger' : 'text-success'}`} role="status">{mensajeCupon}</p>}
             </div>
           </div>
-          <ResumenOrden articulos={[]} totales={totales} />
+          <ResumenCarrito articulos={carrito} totales={totales} />
           <div className="d-grid gap-2 mt-3">
             <button className="btn btn-outline-danger" type="button" onClick={manejarVaciado}>Vaciar carrito</button>
             <Link className="btn btn-primary" to="/checkout.html">Ir a pagar</Link>

@@ -7,5 +7,9 @@ export function formatearMoneda(monto) {
 export function calcularTotales(articulos, descuento = 0) {
   const subtotal = articulos.reduce((suma, articulo) => suma + articulo.precio * articulo.cantidad, 0);
   const montoDescuento = Math.min(subtotal * descuento, subtotal);
-  return { subtotal, descuento: montoDescuento, total: subtotal - montoDescuento };
+  return { subtotal, descuento: montoDescuento, total: calcularTotal(subtotal, montoDescuento) };
+}
+
+export function calcularTotal(subtotal, descuento) {
+  return Math.max(0, subtotal - descuento);
 }

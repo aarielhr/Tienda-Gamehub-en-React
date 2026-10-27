@@ -15,16 +15,53 @@ afterEach(cleanup);
 beforeEach(() => localStorage.clear());
 
 describe('vista de pago', () => {
-  it('valida los campos obligatorios y no registra una orden inválida', async () => {
-    const user = userEvent.setup();
-    render(<MemoryRouter><Pago /></MemoryRouter>);
+  
+it('valida los campos obligatorios y no registra una orden inválida', async () => {
+  const user = userEvent.setup();
 
-    await user.click(screen.getByRole('button', { name: 'Confirmar compra' }));
+  render(
+    <MemoryRouter>
+      <Pago />
+    </MemoryRouter>
+  );
 
-    expect(screen.getByText('Ingresa tu nombre completo (mínimo 3 caracteres).')).toBeInTheDocument();
-    expect(screen.getByText('Selecciona un método de pago.')).toBeInTheDocument();
-    expect(localStorage.getItem('gamehub_ordenes')).toBeNull();
+  // Buscar el botón de confirmar compra
+  const boton = screen.getByRole('button', {
+    name: 'Confirmar compra'
   });
+
+  // Sin dirección, el botón debe estar deshabilitado
+  expect(boton).toBeDisabled();
+
+  // Ingresamos una dirección válida
+  await user.type(
+    screen.getByLabelText('Dirección'),
+    'Calle Central 123'
+  );
+
+  // Ahora el botón debe estar habilitado
+  expect(boton).toBeEnabled();
+
+  // Intentamos comprar sin completar los demás campos
+  await user.click(boton);
+
+  // Comprobar que aparecen las validaciones
+  expect(
+    screen.getByText(
+      'Ingresa tu nombre completo (mínimo 3 caracteres).'
+    )
+  ).toBeInTheDocument();
+
+  expect(
+    screen.getByText('Selecciona un método de pago.')
+  ).toBeInTheDocument();
+
+  // No debe registrarse ninguna orden inválida
+  expect(
+    localStorage.getItem('gamehub_ordenes')
+  ).toBeNull();
+});
+
 
   it('crea una orden con el descuento del cupón y muestra la confirmación', async () => {
     const user = userEvent.setup();
