@@ -14,7 +14,7 @@ npm install
 npm run dev
 ```
 
-Abre la URL que muestra Vite (normalmente `http://localhost:5173`). Para validar la compilación de producción ejecuta `npm run compilar`; para las pruebas unitarias ejecuta `npm run pruebas`. Genera los reportes de cobertura con `npm run cobertura`; el reporte HTML queda en `coverage/index.html` y también se generan salidas de texto y LCOV.
+Abre la URL que muestra Vite (normalmente `http://localhost:5173`). Para validar la compilación de producción ejecuta `npm run compilar`; para las pruebas unitarias con Karma y Jasmine ejecuta `npm run pruebas`. Genera el reporte de cobertura con `npm run cobertura`; el HTML queda en `coverage/html/index.html` y el reporte LCOV en `coverage/lcov.info`. Karma ejecuta las pruebas en Chrome Headless.
 
 ## Estructura
 
@@ -25,8 +25,11 @@ Abre la URL que muestra Vite (normalmente `http://localhost:5173`). Para validar
 │   ├── datos/        # Productos y regiones simulados
 │   ├── servicios/    # Persistencia local, carrito y órdenes simuladas
 │   ├── utilidades/   # Formateo de moneda y cálculo de totales
-│   └── vistas/       # Inicio, catálogo, carrito, pago e historial
-├── configuracion.vite.js # Configuración de Vite y Vitest
+│   ├── vistas/       # Inicio, catálogo, carrito, pago e historial
+│   ├── test/         # Punto de entrada de las pruebas Karma/Jasmine
+│   └── *.pruebas.*   # Pruebas unitarias de componentes, servicios y vistas
+├── configuracion.vite.js # Configuración de Vite
+├── karma.conf.cjs        # Configuración de Karma, Jasmine y cobertura
 ├── package.json          # Dependencias y comandos
 ├── index.html            # Entrada de la aplicación
 └── images/               # Imágenes y recursos gráficos

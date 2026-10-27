@@ -1,0 +1,11 @@
+import '../servicios/servicioCarrito.pruebas.js';
+import '../servicios/servicioOrdenes.pruebas.js';
+import '../servicios/almacenamiento.pruebas.js';
+import '../utilidades/formato.pruebas.js';
+import '../componentes/ElementoCarrito.pruebas.jsx';
+import '../componentes/ProveedorCarrito.pruebas.jsx';
+import '../componentes/TarjetaProducto.pruebas.jsx';
+import '../vistas/Carrito.pruebas.jsx';
+import '../vistas/Catalogo.pruebas.jsx';
+import '../vistas/Ordenes.pruebas.jsx';
+import '../vistas/Pago.pruebas.jsx';
