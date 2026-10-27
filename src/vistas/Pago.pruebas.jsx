@@ -1,85 +1,53 @@
-import { cleanup, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { ProveedorCarrito } from '../contexto/ProveedorCarrito.jsx';
 import Pago from './Pago.jsx';
 
-vi.mock('../contexto/ProveedorCarrito.jsx', () => ({
-  usarCarrito: () => ({
-    carrito: [{ id: 1, nombre: 'Mouse Ajazz 139 Pro', precio: 45000, cantidad: 1, stockMaximo: 5, imagen: '/images/mouse-ajazz.jpg' }],
-    vaciarCarrito: vi.fn()
-  })
-}));
-
 afterEach(cleanup);
-beforeEach(() => localStorage.clear());
+const carritoDePrueba = [{ id: 1, nombre: 'Mouse Ajazz 139 Pro', precio: 45000, cantidad: 1, stockMaximo: 5, imagen: '/images/mouse-ajazz.jpg' }];
 
-describe('vista de pago', () => {
-  
-it('valida los campos obligatorios y no registra una orden inválida', async () => {
-  const user = userEvent.setup();
-
-  render(
-    <MemoryRouter>
-      <Pago />
-    </MemoryRouter>
-  );
-
-  // Buscar el botón de confirmar compra
-  const boton = screen.getByRole('button', {
-    name: 'Confirmar compra'
-  });
-
-  // Sin dirección, el botón debe estar deshabilitado
-  expect(boton).toBeDisabled();
-
-  // Ingresamos una dirección válida
-  await user.type(
-    screen.getByLabelText('Dirección'),
-    'Calle Central 123'
-  );
-
-  // Ahora el botón debe estar habilitado
-  expect(boton).toBeEnabled();
-
-  // Intentamos comprar sin completar los demás campos
-  await user.click(boton);
-
-  // Comprobar que aparecen las validaciones
-  expect(
-    screen.getByText(
-      'Ingresa tu nombre completo (mínimo 3 caracteres).'
-    )
-  ).toBeInTheDocument();
-
-  expect(
-    screen.getByText('Selecciona un método de pago.')
-  ).toBeInTheDocument();
-
-  // No debe registrarse ninguna orden inválida
-  expect(
-    localStorage.getItem('gamehub_ordenes')
-  ).toBeNull();
+beforeEach(() => {
+  localStorage.clear();
+  localStorage.setItem('gamehub_carrito', JSON.stringify(carritoDePrueba));
 });
 
+describe('vista de pago', () => {
+  it('valida los campos obligatorios y no registra una orden inválida', () => {
+    render(<MemoryRouter><ProveedorCarrito hijos={<Pago />} /></MemoryRouter>);
 
-  it('crea una orden con el descuento del cupón y muestra la confirmación', async () => {
-    const user = userEvent.setup();
+  const boton = screen.getByRole('button', { name: 'Confirmar compra' });
+  expect(boton.disabled).toBeTrue();
+
+  fireEvent.change(screen.getByLabelText('Dirección'), {
+  target: { value: 'Calle Central 123' }
+  });
+
+expect(boton.disabled).toBeFalse();
+fireEvent.click(boton);
+
+    expect(screen.getByText('Ingresa tu nombre completo (mínimo 3 caracteres).')).not.toBeNull();
+    expect(screen.getByText('Selecciona un método de pago.')).not.toBeNull();
+    expect(localStorage.getItem('gamehub_ordenes')).toBeNull();
+  });
+
+  it('crea una orden con el descuento del cupón y muestra la confirmación', () => {
     localStorage.setItem('gamehub_cupon', JSON.stringify({ codigo: 'SETUP2026', descuento: 0.15 }));
-    render(<MemoryRouter><Pago /></MemoryRouter>);
+    const guardar = spyOn(Storage.prototype, 'setItem').and.callThrough();
+    render(<MemoryRouter><ProveedorCarrito hijos={<Pago />} /></MemoryRouter>);
 
-    await user.type(screen.getByLabelText('Nombre completo'), 'Juan Pérez');
-    await user.type(screen.getByLabelText('Correo electrónico'), 'juan@correo.cl');
-    await user.type(screen.getByLabelText('Teléfono'), '912345678');
-    await user.selectOptions(screen.getByLabelText('Región'), 'Valparaíso');
-    await user.selectOptions(screen.getByLabelText('Comuna'), 'Quilpué');
-    await user.type(screen.getByLabelText('Dirección'), 'Calle Central 123');
-    await user.click(screen.getByLabelText('Tarjeta de crédito / débito'));
-    await user.click(screen.getByRole('button', { name: 'Confirmar compra' }));
+    fireEvent.change(screen.getByLabelText('Nombre completo'), { target: { value: 'Juan Pérez' } });
+    fireEvent.change(screen.getByLabelText('Correo electrónico'), { target: { value: 'juan@correo.cl' } });
+    fireEvent.change(screen.getByLabelText('Teléfono'), { target: { value: '912345678' } });
+    fireEvent.change(screen.getByLabelText('Región'), { target: { value: 'Valparaíso' } });
+    fireEvent.change(screen.getByLabelText('Comuna'), { target: { value: 'Quilpué' } });
+    fireEvent.change(screen.getByLabelText('Dirección'), { target: { value: 'Calle Central 123' } });
+    fireEvent.click(screen.getByLabelText('Tarjeta de crédito / débito'));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmar compra' }));
 
-    expect(await screen.findByRole('heading', { name: '¡Compra confirmada!' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '¡Compra confirmada!' })).not.toBeNull();
     expect(JSON.parse(localStorage.getItem('gamehub_ordenes'))[0].total).toBe(38250);
     expect(localStorage.getItem('gamehub_carrito')).toBeNull();
     expect(localStorage.getItem('gamehub_cupon')).toBeNull();
+    expect(guardar).toHaveBeenCalledWith('gamehub_ordenes', jasmine.any(String));
   });
 });
