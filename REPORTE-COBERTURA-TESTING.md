@@ -1,81 +1,96 @@
-# Reporte de cobertura de testing
+# Reporte de cobertura de testing — GameHub Store
 
-## Resumen
+## Entorno y ejecución
 
-La suite automatizada se ejecuta con **Karma, Jasmine, Webpack e Istanbul**. Karma abre Chrome Headless y reúne los resultados de las pruebas unitarias y de componentes.
+Fecha de verificación: 27 de octubre de 2026.
 
-Última ejecución registrada: **26 de octubre de 2026**.
+La suite utiliza Jasmine y Karma, con Webpack y Babel para procesar JavaScript y JSX. La cobertura se obtiene mediante instrumentación Istanbul y `karma-coverage`.
 
-| Métrica | Resultado |
-|---|---:|
-| Pruebas aprobadas | 54 de 54 |
-| Sentencias cubiertas | 93,11 % (203 de 218) |
-| Líneas cubiertas | 93,15 % (177 de 190) |
-| Funciones cubiertas | 97,29 % (72 de 74) |
-| Ramas cubiertas | 87,59 % (120 de 137) |
+Las pruebas se ejecutaron en Edge 156 sobre Windows 10, mediante el lanzador basado en Chrome Headless.
 
-Estos porcentajes describen el código instrumentado que se cargó al ejecutar las pruebas; no deben interpretarse como cobertura exhaustiva de toda la aplicación. La configuración actual no establece un mínimo de cobertura que haga fallar la ejecución.
+Comandos verificados:
 
-## Áreas verificadas
-
-| Área | Pruebas incluidas |
-|---|---|
-| Carrito | Agregar, actualizar, quitar y vaciar productos; validar cupones y guardar cambios en `localStorage`. |
-| Órdenes | Crear y conservar órdenes previas, y presentar el historial persistido. |
-| Almacenamiento | Serializar y leer valores, usar valores alternativos y manejar JSON inválido. |
-| Utilidades | Calcular subtotal, descuento y total; limitar descuentos y formatear moneda. |
-| Proveedor del carrito | Registrar y retirar el listener `storage`, y sincronizar el carrito. |
-| Tarjeta de producto | Espiar el callback de agregar y controlar el temporizador con el reloj de Jasmine. |
-| Catálogo | Mostrar productos, cargar más, ordenar, filtrar y validar rangos de precio. |
-| Pago | Mostrar errores de validación y completar una compra con cupón y persistencia de la orden. |
-
-Las pruebas usan `jasmine.createSpy`, `spyOn` y `jasmine.clock()` para observar o controlar callbacks, almacenamiento, manejadores de eventos y temporizadores.
-
-## Archivos de pruebas
-
-- `src/servicios/servicioCarrito.pruebas.js`
-- `src/servicios/servicioOrdenes.pruebas.js`
-- `src/servicios/almacenamiento.pruebas.js`
-- `src/utilidades/formato.pruebas.js`
-- `src/componentes/ElementoCarrito.pruebas.jsx`
-- `src/componentes/ProveedorCarrito.pruebas.jsx`
-- `src/componentes/TarjetaProducto.pruebas.jsx`
-- `src/vistas/Carrito.pruebas.jsx`
-- `src/vistas/Catalogo.pruebas.jsx`
-- `src/vistas/Ordenes.pruebas.jsx`
-- `src/vistas/Pago.pruebas.jsx`
-
-El punto de entrada `src/test/index.js` importa estos archivos para que Karma los ejecute.
-
-## Ejecución y reportes
-
-Desde la raíz del proyecto:
-
-```powershell
+```bash
 npm run pruebas
+npm run compilar
 ```
 
-Para correr la suite y generar los reportes:
+Resultado: **64 pruebas ejecutadas y aprobadas, sin fallos**. La compilación de producción con Vite también finalizó correctamente.
 
-```powershell
+## Alcance y casos diseñados
+
+La configuración integra las pruebas importadas por `src/test/index.js` y los archivos `pruebas-karma/**/*.spec.js`.
+
+La suite reúne 54 casos de la suite incorporada desde `main` y 10 casos de `lukas`.
+
+Las áreas comprobadas incluyen:
+
+- **Carrito:** agregar productos, incrementar cantidades sin duplicarlos, respetar stock, actualizar cantidades, quitar artículos, vaciar el carrito y persistir cambios.
+- **Cupones y totales:** calcular subtotal, descuentos y total; rechazar códigos desconocidos; comprobar topes de descuento en el servicio, vigencia por fechas y totales no negativos.
+- **Componentes:** mostrar productos y estados sin stock, controlar callbacks, presentar el resumen del carrito y bloquear la confirmación sin dirección.
+- **Reseñas:** ordenar por fecha y calcular la puntuación promedio.
+- **Almacenamiento:** leer y serializar datos, usar valores alternativos y comprobar el error ante JSON inválido.
+- **Órdenes:** crear y persistir órdenes, conservar las existentes y mostrar el historial.
+- **Catálogo:** carga incremental, ordenamiento, filtros y validación del rango de precios.
+- **Pago:** validar campos obligatorios, impedir órdenes inválidas y confirmar una compra con descuento.
+- **Contexto del carrito:** registrar y retirar el manejador de eventos de almacenamiento y sincronizar el estado.
+
+Se utilizan `jasmine.createSpy`, `spyOn` y `jasmine.clock()` para observar callbacks, simular respuestas y controlar almacenamiento, eventos y temporizadores.
+
+## Resultados generales de cobertura
+
+| Métrica | Porcentaje | Elementos cubiertos |
+|---|---:|---:|
+| Sentencias | 92,94 % | 224 de 241 |
+| Ramas | 85,80 % | 133 de 155 |
+| Funciones | 97,53 % | 79 de 81 |
+| Líneas | 92,72 % | 204 de 220 |
+
+## Cobertura por archivo
+
+Las rutas de esta tabla son relativas a `src/`.
+
+| Archivo | Sentencias | Ramas | Funciones | Líneas |
+|---|---:|---:|---:|---:|
+| componentes/ElementoCarrito.jsx | 100 % | 100 % | 100 % | 100 % |
+| componentes/FormularioCheckout.jsx | 100 % | 50 % | 100 % | 100 % |
+| componentes/ListaResenas.jsx | 87,50 % | 40 % | 100 % | 87,50 % |
+| componentes/ResumenCarrito.jsx | 100 % | 66,66 % | 100 % | 100 % |
+| componentes/ResumenOrden.jsx | 100 % | 100 % | 100 % | 100 % |
+| componentes/TarjetaProducto.jsx | 100 % | 91,66 % | 100 % | 100 % |
+| contexto/ProveedorCarrito.jsx | 75,60 % | 37,50 % | 85,71 % | 74,28 % |
+| datos/productos.js | 100 % | 100 % | 100 % | 100 % |
+| servicios/almacenamiento.js | 100 % | 100 % | 100 % | 100 % |
+| servicios/servicioCarrito.js | 97,05 % | 88,46 % | 100 % | 97,05 % |
+| servicios/servicioOrdenes.js | 100 % | 100 % | 100 % | 100 % |
+| utilidades/formato.js | 100 % | 100 % | 100 % | 100 % |
+| vistas/Carrito.jsx | 100 % | 100 % | 100 % | 100 % |
+| vistas/Catalogo.jsx | 92,10 % | 85,71 % | 100 % | 90,90 % |
+| vistas/Ordenes.jsx | 100 % | 100 % | 100 % | 100 % |
+| vistas/Pago.jsx | 94,44 % | 91,30 % | 100 % | 94,44 % |
+
+## Generación de reportes
+
+```bash
 npm run cobertura
 ```
 
-Los reportes de cobertura se guardan en:
+La configuración también genera cobertura al ejecutar `npm run pruebas`.
 
-- HTML: `coverage/html/index.html`
-- LCOV: `coverage/lcov.info`
-- Resumen en texto: salida del comando en la terminal.
+Archivos generados:
 
-También se puede usar `npm run test:watch` para mantener Karma activo mientras se modifican archivos.
+- HTML: `coverage/html/index.html`.
+- LCOV: `coverage/lcov.info`.
+- Tabla por archivo y resumen general: salida de la terminal.
 
-## Cobertura pendiente
+Los archivos de pruebas se excluyen de la instrumentación.
 
-La suite verifica flujos importantes, pero no cubre todos los componentes, páginas ni casos límite. Se recomienda agregar pruebas para:
+## Límites y pendientes
 
-- La vista de inicio y el componente de estructura/navegación, incluidos el título de página y el aviso temporal.
-- Los casos restantes del proveedor: agregar, actualizar, quitar y vaciar productos, y el error al usar el contexto fuera del proveedor.
-- Casos adicionales de validación de pago y errores del almacenamiento.
-- Ramas límite adicionales del catálogo, el stock y el cálculo de descuentos.
+Los porcentajes corresponden al código instrumentado cargado por las pruebas. No representan cobertura exhaustiva de toda la aplicación ni acreditan por sí solos el cumplimiento del listado obligatorio de la evaluación.
 
-Conviene revisar `coverage/html/index.html` después de cada ejecución para identificar líneas y ramas no cubiertas. Un porcentaje alto no sustituye la revisión de la calidad de las aserciones ni garantiza que todos los comportamientos relevantes estén probados.
+Quedan casos por ampliar en el proveedor del carrito, las reseñas, las validaciones de pago y las ramas del catálogo. Las vistas de inicio y estructura/navegación no aparecen en el reporte obtenido.
+
+La comprobación de los topes de descuento y de la vigencia en funciones del servicio no demuestra su aplicación completa en el flujo de compra.
+
+La configuración no exige un porcentaje mínimo para aprobar la ejecución. La revisión visual en anchos de 360, 768 y 1280 píxeles debe realizarse por separado.

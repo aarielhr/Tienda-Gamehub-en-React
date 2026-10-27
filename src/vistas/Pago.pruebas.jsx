@@ -14,7 +14,16 @@ beforeEach(() => {
 describe('vista de pago', () => {
   it('valida los campos obligatorios y no registra una orden inválida', () => {
     render(<MemoryRouter><ProveedorCarrito hijos={<Pago />} /></MemoryRouter>);
-    fireEvent.click(screen.getByRole('button', { name: 'Confirmar compra' }));
+
+  const boton = screen.getByRole('button', { name: 'Confirmar compra' });
+  expect(boton.disabled).toBeTrue();
+
+  fireEvent.change(screen.getByLabelText('Dirección'), {
+  target: { value: 'Calle Central 123' }
+  });
+
+expect(boton.disabled).toBeFalse();
+fireEvent.click(boton);
 
     expect(screen.getByText('Ingresa tu nombre completo (mínimo 3 caracteres).')).not.toBeNull();
     expect(screen.getByText('Selecciona un método de pago.')).not.toBeNull();
