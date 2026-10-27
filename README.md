@@ -11,10 +11,10 @@ Tienda de hardware y periféricos migrada a React para EP2. El catálogo, carrit
 
 ```bash
 npm install
-npm run desarrollo
+npm run dev
 ```
 
-Abre la URL que muestra Vite (normalmente `http://localhost:5173`). Para validar la compilación de producción ejecuta `npm run compilar`; para las pruebas unitarias ejecuta `npm run pruebas`.
+Abre la URL que muestra Vite (normalmente `http://localhost:5173`). Para validar la compilación de producción ejecuta `npm run compilar`; para las pruebas unitarias ejecuta `npm run pruebas`. Genera los reportes de cobertura con `npm run cobertura`; el reporte HTML queda en `coverage/index.html` y también se generan salidas de texto y LCOV.
 
 ## Estructura
 
