@@ -4,6 +4,7 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
+    "build": "vite build --config configuracion.vite.js",
     "dev": "vite --config configuracion.vite.js",
     "compilar": "vite build --config configuracion.vite.js",
     "pruebas": "karma start karma.conf.cjs --single-run",
