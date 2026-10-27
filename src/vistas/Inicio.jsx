@@ -65,7 +65,7 @@ export default function Inicio() {
       </section>
       <section className="seccion-video" aria-labelledby="titulo-video">
         <div className="contenido-video"><p className="sobrelinea">// HAZLO TUYO</p><h2 className="titulo-seccion" id="titulo-video">Video relacionado</h2><p>Cada pieza cuenta.<br />El siguiente movimiento es tuyo.</p><Link className="enlace-editorial" to="/catalogo.html">Encuentra tu equipo <span aria-hidden="true">↗</span></Link></div>
-        <a className="vista-previa-video" href="https://youtu.be/dQw4w9WgXcQ" target="_blank" rel="noreferrer" aria-label="Abrir video tecnológico">
+        <a className="vista-previa-video" href="https://youtu.be/TP8rDXQdjg8" target="_blank" rel="noreferrer" aria-label="Abrir video tecnológico">
           <img src="/images/yt-thumbnail.jpg" alt="Vista previa del video tecnológico" loading="lazy" />
           <span aria-hidden="true">▶</span>
         </a>
