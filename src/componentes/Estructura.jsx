@@ -13,9 +13,11 @@ const enlaces = [
 function Cabecera() {
   const { cantidadArticulos } = usarCarrito();
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark barra-navegacion-tienda">
+    <>
+<div className="cinta-tienda"><div className="container"><span><i aria-hidden="true" /> TU PRÓXIMO NIVEL, AQUÍ.</span><span>HARDWARE / PERIFÉRICOS / SETUP</span></div></div>
+<nav className="navbar navbar-expand-lg navbar-dark barra-navegacion-tienda" aria-label="Navegación principal">
       <div className="container">
-        <NavLink className="navbar-brand fw-bold" to="/">GameHub Store</NavLink>
+        <NavLink className="navbar-brand fw-bold" to="/" aria-label="GameHub Store"><span className="simbolo-marca" aria-hidden="true">G</span><span className="texto-marca">GAME<span>HUB</span><small>STORE</small></span></NavLink>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main-navigation" aria-controls="main-navigation" aria-expanded="false" aria-label="Abrir navegación">
           <span className="navbar-toggler-icon" />
         </button>
@@ -32,22 +34,23 @@ function Cabecera() {
         </div>
       </div>
     </nav>
+</>
   );
 }
 
 function PiePagina() {
   return (
     <footer className="pie-tienda mt-auto">
-      <div className="container py-4 d-flex flex-column flex-md-row justify-content-between gap-2">
+      <div className="container"><div className="cabecera-pie"><span className="marca-pie">GAME<span>HUB</span> <small>STORE</small></span><span className="sobrelinea">HARDWARE PARA TU SIGUIENTE NIVEL.</span></div><div className="contenido-pie">
         <span>© 2026 GameHub Store. Todos los derechos reservados.</span>
-        <span>Contacto: soporte@gamehubstore.cl</span>
+        <span>Contacto: <a href="mailto:soporte@gamehubstore.cl">soporte@gamehubstore.cl</a></span>
         <div className="d-flex gap-3">
           <a href="https://twitter.com/gamehubstore" target="_blank" rel="noreferrer">Twitter</a>
           <a href="https://facebook.com/gamehubstore" target="_blank" rel="noreferrer">Facebook</a>
           <a href="https://instagram.com/gamehubstore" target="_blank" rel="noreferrer">Instagram</a>
         </div>
       </div>
-    </footer>
+    </div></footer>
   );
 }
 
