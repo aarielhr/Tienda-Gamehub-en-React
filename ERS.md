@@ -266,7 +266,7 @@ La suite reúne 54 casos importados desde `src/test/index.js` y los siguientes d
 | 9 | Bloquear la confirmación sin dirección y habilitar el botón al ingresarla. | `FormularioCheckout.spec.js` |
 | 10 | Ordenar reseñas por fecha y calcular su promedio. | `ListaResenas.spec.js` |
 
-Los otros 54 casos comprueban servicios de carrito, almacenamiento y órdenes; utilidades; componentes; sincronización del proveedor; catálogo; carrito; historial y pago. Se utilizan pruebas aisladas y pruebas de componentes con interacción. El resultado de 64 casos aprobados acredita la suite ejecutada, pero su correspondencia completa con el listado obligatorio debe cotejarse con la pauta del docente.
+Los otros 54 casos comprueban servicios de carrito, almacenamiento y órdenes; utilidades; componentes; sincronización del proveedor; catálogo; carrito; historial y pago. Se utilizan pruebas aisladas y pruebas de componentes con interacción. El resultado de 64 casos aprobados acredita la suite ejecutada.
 
 | Métrica de cobertura | Resultado |
 |---|---:|
@@ -317,7 +317,6 @@ npm run compilar
 | Revisión del listado obligatorio de pruebas | Pendiente de cotejo con la pauta completa. |
 | Compatibilidad entre navegadores y accesibilidad integral | Verificación adicional pendiente. |
 
-Los elementos pendientes no se presentan como funcionalidades terminadas. Antes de entregar se debe cotejar la pauta completa, revisar el despliegue final y preparar el proyecto comprimido y los documentos en el formato solicitado por el docente.
 
 #### Consideraciones para EV3
 
@@ -326,6 +325,3 @@ Los elementos pendientes no se presentan como funcionalidades terminadas. Antes 
 - Gestionar pedidos, stock y persistencia en el backend, en lugar de depender de `localStorage` como fuente de verdad.
 - Evaluar la integración de pagos, notificaciones y seguimiento solo si forman parte de los requisitos de la siguiente evaluación.
 
----
-
-*La versión 2 conserva la estructura del ERS de EV1 y la actualiza a la arquitectura, las pruebas y el estado real de GameHub Store para EV2. Los resultados registrados corresponden a las verificaciones realizadas el 27 de octubre de 2026.*
