@@ -1,0 +1,309 @@
+/*
+ * Paleta «Núcleo»: la estructura de seis colores del caso (fondo, superficie, primario, acento,
+ * texto y error) más algunos derivados. Se declara una sola vez y el resto de las reglas la usa.
+ */
+:root {
+  --color-fondo: #0d0f14;
+  --color-superficie: #161a22;
+  --color-primario: #9b8cff;
+  --color-acento: #3fe0a0;
+  --color-texto: #e7e9f0;
+  --color-error: #ff7b7b;
+
+  /* Derivados */
+  --color-superficie-2: #1f2430;
+  --color-borde: #2b3242;
+  --color-borde-control: #6b7389;
+  --color-texto-secundario: #a6acbd;
+  --color-aviso: #f5c451;
+  --color-primario-hover: #b1a5ff;
+  --color-tinte-primario: #292a41;
+  --color-tinte-acento: #1c3634;
+  --color-tinte-error: #37282e;
+  --color-tinte-aviso: #353229;
+
+  --radio-borde: 8px;
+  --radio-tarjeta: 12px;
+  --fuente-titulos: 'Chakra Petch', 'Inter', sans-serif;
+  --fuente-texto: 'Inter', system-ui, sans-serif;
+  --fuente-datos: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* EP2: las mismas variables alimentan Bootstrap 5.3 en modo oscuro (<html data-bs-theme="dark">) */
+:root[data-bs-theme='dark'] {
+  --bs-body-bg: var(--color-fondo);
+  --bs-body-bg-rgb: 13, 15, 20;
+  --bs-body-color: var(--color-texto);
+  --bs-body-color-rgb: 231, 233, 240;
+  --bs-body-font-family: var(--fuente-texto);
+  --bs-emphasis-color: #ffffff;
+  --bs-secondary-color: var(--color-texto-secundario);
+  --bs-secondary-bg: var(--color-superficie-2);
+  --bs-tertiary-bg: var(--color-superficie);
+  --bs-heading-color: var(--color-texto);
+  --bs-border-color: var(--color-borde);
+  --bs-border-radius: var(--radio-borde);
+  --bs-border-radius-lg: var(--radio-tarjeta);
+  --bs-link-color: var(--color-primario);
+  --bs-link-color-rgb: 155, 140, 255;
+  --bs-link-hover-color: var(--color-primario-hover);
+  --bs-link-hover-color-rgb: 177, 165, 255;
+  --bs-primary: var(--color-primario);
+  --bs-primary-rgb: 155, 140, 255;
+  --bs-success: var(--color-acento);
+  --bs-success-rgb: 63, 224, 160;
+  --bs-danger: var(--color-error);
+  --bs-danger-rgb: 255, 123, 123;
+  --bs-warning: var(--color-aviso);
+  --bs-warning-rgb: 245, 196, 81;
+  --bs-primary-text-emphasis: var(--color-primario-hover);
+  --bs-primary-bg-subtle: var(--color-tinte-primario);
+  --bs-primary-border-subtle: rgba(155, 140, 255, 0.45);
+  --bs-success-text-emphasis: var(--color-acento);
+  --bs-success-bg-subtle: var(--color-tinte-acento);
+  --bs-success-border-subtle: rgba(63, 224, 160, 0.4);
+  --bs-danger-text-emphasis: var(--color-error);
+  --bs-danger-bg-subtle: #2f1e22;
+  --bs-danger-border-subtle: rgba(255, 123, 123, 0.45);
+  --bs-warning-text-emphasis: var(--color-aviso);
+  --bs-warning-bg-subtle: #2d281d;
+  --bs-warning-border-subtle: rgba(245, 196, 81, 0.45);
+  --bs-form-valid-color: var(--color-acento);
+  --bs-form-valid-border-color: var(--color-acento);
+  --bs-form-invalid-color: var(--color-error);
+  --bs-form-invalid-border-color: var(--color-error);
+  --bs-focus-ring-color: rgba(155, 140, 255, 0.35);
+}
+
+body {
+  font-family: var(--fuente-texto);
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+}
+
+h1,
+h2,
+h3,
+h4,
+.titulo {
+  font-family: var(--fuente-titulos);
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+h3,
+h4 {
+  font-weight: 600;
+}
+
+/* ---------- Botones: el primario va una vez por pantalla; el tonal, en acciones repetidas ---------- */
+
+.btn {
+  --bs-btn-font-weight: 600;
+  --bs-btn-border-radius: var(--radio-borde);
+  --bs-btn-focus-box-shadow: none;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+.btn-lg {
+  min-height: 52px;
+}
+
+.btn-primary {
+  /* El primario es claro: el texto va en grafito (6,9 : 1). En blanco quedaría en 2,8 : 1. */
+  --bs-btn-color: var(--color-fondo);
+  --bs-btn-bg: var(--color-primario);
+  --bs-btn-border-color: var(--color-primario);
+  --bs-btn-hover-color: var(--color-fondo);
+  --bs-btn-hover-bg: var(--color-primario-hover);
+  --bs-btn-hover-border-color: var(--color-primario-hover);
+  --bs-btn-active-color: var(--color-fondo);
+  --bs-btn-active-bg: var(--color-primario-hover);
+  --bs-btn-active-border-color: var(--color-primario-hover);
+  --bs-btn-disabled-color: var(--color-texto-secundario);
+  --bs-btn-disabled-bg: var(--color-superficie-2);
+  --bs-btn-disabled-border-color: var(--color-borde);
+  --bs-btn-disabled-opacity: 1;
+}
+
+.btn-tonal {
+  --bs-btn-color: var(--color-primario-hover);
+  --bs-btn-bg: var(--color-tinte-primario);
+  --bs-btn-border-color: rgba(155, 140, 255, 0.5);
+  --bs-btn-hover-color: #ffffff;
+  --bs-btn-hover-bg: #34355a;
+  --bs-btn-hover-border-color: var(--color-primario);
+  --bs-btn-active-color: #ffffff;
+  --bs-btn-active-bg: #34355a;
+  --bs-btn-active-border-color: var(--color-primario);
+  --bs-btn-disabled-color: var(--color-texto-secundario);
+  --bs-btn-disabled-bg: var(--color-superficie-2);
+  --bs-btn-disabled-border-color: var(--color-borde);
+  --bs-btn-disabled-opacity: 1;
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: var(--color-texto);
+  --bs-btn-border-color: var(--color-borde-control);
+  --bs-btn-hover-color: var(--color-texto);
+  --bs-btn-hover-bg: var(--color-superficie-2);
+  --bs-btn-hover-border-color: var(--color-texto-secundario);
+  --bs-btn-active-color: var(--color-texto);
+  --bs-btn-active-bg: var(--color-superficie-2);
+  --bs-btn-active-border-color: var(--color-texto-secundario);
+  --bs-btn-disabled-color: var(--color-texto-secundario);
+  --bs-btn-disabled-bg: var(--color-superficie-2);
+  --bs-btn-disabled-border-color: var(--color-borde);
+  --bs-btn-disabled-opacity: 1;
+}
+
+.btn-outline-danger {
+  --bs-btn-color: var(--color-error);
+  --bs-btn-border-color: var(--color-error);
+  --bs-btn-hover-color: var(--color-fondo);
+  --bs-btn-hover-bg: var(--color-error);
+  --bs-btn-hover-border-color: var(--color-error);
+  --bs-btn-active-color: var(--color-fondo);
+  --bs-btn-active-bg: var(--color-error);
+  --bs-btn-active-border-color: var(--color-error);
+  --bs-btn-disabled-color: var(--color-texto-secundario);
+  --bs-btn-disabled-bg: var(--color-superficie-2);
+  --bs-btn-disabled-border-color: var(--color-borde);
+  --bs-btn-disabled-opacity: 1;
+}
+
+.btn-link {
+  --bs-btn-color: var(--color-primario);
+  --bs-btn-hover-color: var(--color-primario-hover);
+  --bs-btn-active-color: var(--color-primario-hover);
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+/* ---------- Formularios ---------- */
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
+}
+
+.form-text {
+  color: var(--color-texto-secundario);
+  font-size: 0.8125rem;
+}
+
+.form-control,
+.form-select {
+  min-height: 44px;
+  background-color: var(--color-fondo);
+  border-color: var(--color-borde-control);
+  color: var(--color-texto);
+  border-radius: var(--radio-borde);
+}
+
+.form-control::placeholder {
+  color: #8b91a3;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 3px rgba(155, 140, 255, 0.35);
+}
+
+.form-control:disabled,
+.form-control[aria-readonly='true'] {
+  background-color: var(--color-superficie-2);
+  color: var(--color-texto-secundario);
+  border-color: var(--color-borde);
+}
+
+/* El error se muestra con texto e icono bajo el campo, no con un icono dentro */
+.form-control.is-invalid,
+.was-validated .form-control:invalid {
+  border-color: var(--color-error);
+  background-image: none;
+  padding-right: 0.75rem;
+}
+
+.form-select.is-invalid {
+  --bs-form-select-bg-icon: none;
+  border-color: var(--color-error);
+}
+
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+  box-shadow: 0 0 0 3px rgba(255, 123, 123, 0.3);
+}
+
+textarea.form-control {
+  min-height: 88px;
+}
+
+.form-check-input {
+  width: 1.125rem;
+  height: 1.125rem;
+  background-color: var(--color-fondo);
+  border-color: var(--color-borde-control);
+}
+
+.form-check-input:focus {
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 3px rgba(155, 140, 255, 0.35);
+}
+
+.form-check-input:checked {
+  background-color: var(--color-primario);
+  border-color: var(--color-primario);
+}
+
+/* Marca en grafito sobre el violeta, igual que el texto del botón primario */
+.form-check-input:checked[type='checkbox'] {
+  --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%230d0f14' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+}
+
+.form-check-input:checked[type='radio'] {
+  --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%230d0f14'/%3e%3c/svg%3e");
+}
+
+/* ---------- Tablas ---------- */
+
+.table {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--color-texto);
+  --bs-table-border-color: var(--color-borde);
+  --bs-table-hover-bg: rgba(155, 140, 255, 0.06);
+  --bs-table-hover-color: var(--color-texto);
+  margin: 0;
+}
+
+.table thead th {
+  background: var(--color-fondo);
+  color: var(--color-texto-secundario);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.table > :not(caption) > * > * {
+  padding: 0.75rem 0.875rem;
+  vertical-align: middle;
+}
+
+.spinner-border {
+  color: var(--color-primario);
+}

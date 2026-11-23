@@ -1,361 +1,63 @@
-
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import ResumenOrden from '../componentes/ResumenOrden.jsx';
-import FormularioCheckout from '../componentes/FormularioCheckout.jsx';
-import { usarCarrito } from '../contexto/ProveedorCarrito.jsx';
+import { useCarrito } from '../context/useCarrito.js';
+import { useAuth } from '../context/useAuth.js';
 import { regiones } from '../datos/productos.js';
-import { limpiarAlmacenamientoCarrito } from '../servicios/servicioCarrito.js';
-import { obtenerCupon } from '../servicios/almacenamiento.js';
-import { crearOrden } from '../servicios/servicioOrdenes.js';
+import { REGIONES } from '../data/regiones.js';
 import { calcularTotales } from '../utilidades/formato.js';
+import { obtenerPerfil } from '../services/autenticacion.js';
+import { crearOrden } from '../services/ordenes.js';
+import { Cargando, MensajeError } from '../components/Estado.jsx';
 
-// Valores iniciales del formulario
-const valoresIniciales = {
-  nombre: '',
-  correo: '',
-  telefono: '',
-  region: '',
-  comuna: '',
-  direccion: '',
-  pago: ''
-};
-
-// Validaciones de los campos
-function validarFormulario(valores) {
-  return {
-    nombre: valores.nombre.trim().length >= 3,
-    correo: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-      valores.correo.trim()
-    ),
-    telefono: /^\d{9}$/.test(valores.telefono.trim()),
-    region: Boolean(
-      valores.region && regiones[valores.region]
-    ),
-    comuna: Boolean(
-      valores.region &&
-      regiones[valores.region]?.includes(valores.comuna)
-    ),
-    direccion: valores.direccion.trim().length >= 5,
-    pago: ['tarjeta', 'transferencia', 'contraentrega']
-      .includes(valores.pago)
-  };
-}
+const inicial = { nombre: '', correo: '', telefono: '', region: '', comuna: '', direccion: '', metodoPago: 'DEBITO' };
 
 export default function Pago() {
-  const { carrito, vaciarCarrito } = usarCarrito();
+  const { lineas: carrito, vaciar: vaciarCarrito, cupon } = useCarrito();
+  const { usuario } = useAuth();
+  const navegar = useNavigate();
+  const [valores, setValores] = useState(inicial);
+  const [tocados, setTocados] = useState({});
+  const [enviando, setEnviando] = useState(false);
+  const [error, setError] = useState(null);
+  const [cargandoPerfil, setCargandoPerfil] = useState(true);
+  useEffect(() => {
+    let vigente = true;
+    obtenerPerfil().then((p) => { if (vigente) setValores((v) => ({ ...v, nombre: p.nombre ?? usuario?.nombre ?? '', correo: p.email ?? usuario?.email ?? '', telefono: p.telefono ?? '', region: ({ 'Región de Valparaíso': 'Valparaíso', 'Región Metropolitana de Santiago': 'Metropolitana de Santiago', 'Región del Biobío': 'Biobío' })[p.region] ?? p.region ?? '', comuna: p.comuna ?? '', direccion: p.direccion ?? '' })); }).catch(() => { if (vigente) setValores((v) => ({ ...v, nombre: usuario?.nombre ?? '', correo: usuario?.email ?? '' })); }).finally(() => { if (vigente) setCargandoPerfil(false); });
+    return () => { vigente = false; };
+  }, [usuario]);
+  const regionesValidas = Object.fromEntries(REGIONES.map((r) => [r.nombre, r.comunas]));
+  const aliasRegion = { 'Valparaíso': 'Región de Valparaíso', 'Metropolitana de Santiago': 'Región Metropolitana de Santiago', 'Biobío': 'Región del Biobío' };
+  const validar = (v) => ({
 
-  const [valores, establecerValores] = useState(valoresIniciales);
-  const [formularioEnviado, establecerFormularioEnviado] =
-    useState(false);
-  const [confirmacion, establecerConfirmacion] = useState(null);
-  const [errores, establecerErrores] = useState({});
-
-  const totales = calcularTotales(
-    carrito,
-    obtenerCupon()?.descuento ?? 0
-  );
-
-  const comunasDisponibles = regiones[valores.region] ?? [];
-
-  // Actualizar los campos del formulario
-  const actualizarValor = (evento) => {
-    const { name, value } = evento.target;
-
-    const nuevosValores = {
-      ...valores,
-      [name]: value,
-      ...(name === 'region' ? { comuna: '' } : {})
-    };
-
-    establecerValores(nuevosValores);
-
-    if (formularioEnviado) {
-      establecerErrores(validarFormulario(nuevosValores));
-    }
-  };
-
-  // Procesar la compra
-  const manejarEnvio = (evento) => {
-    evento.preventDefault();
-
-    establecerFormularioEnviado(true);
-
-    const validacion = validarFormulario(valores);
-    establecerErrores(validacion);
-
-    if (
-      Object.values(validacion).some((valido) => !valido) ||
-      carrito.length === 0
-    ) {
-      return;
-    }
-
-    const orden = crearOrden(totales.total);
-
-    establecerConfirmacion({
-      orden,
-      correo: valores.correo.trim()
-    });
-
-    vaciarCarrito();
-    limpiarAlmacenamientoCarrito();
-  };
-
-  // Pantalla de compra confirmada
-  if (confirmacion) {
-    return (
-      <section className="panel-confirmacion text-center rounded-4 p-4 p-md-5">
-        <h1 className="titulo-seccion">
-          ¡Compra confirmada!
-        </h1>
-
-        <p className="mt-3">
-          Tu número de orden es{' '}
-          <strong>{confirmacion.orden.numero}</strong>.
-        </p>
-
-        <p>
-          Te enviaremos el detalle a{' '}
-          <strong>{confirmacion.correo}</strong>.
-        </p>
-
-        <Link
-          className="btn btn-primary mt-2"
-          to="/ordenes.html"
-        >
-          Ver mis órdenes
-        </Link>
-      </section>
-    );
+    nombre: v.nombre.trim().length >= 3 ? '' : 'Ingresa tu nombre completo (mínimo 3 caracteres).',
+    correo: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.correo.trim()) ? '' : 'Ingresa un correo con formato válido.',
+    telefono: /^9\d{8}$/.test(v.telefono.trim()) ? '' : 'El teléfono debe tener 9 dígitos y empezar con 9.',
+    region: (regionesValidas[aliasRegion[v.region] ?? v.region] || regiones[v.region]) ? '' : 'Selecciona una región válida.',
+    comuna: (regionesValidas[aliasRegion[v.region] ?? v.region] || regiones[v.region])?.includes(v.comuna) ? '' : 'Selecciona una comuna válida para esa región.',
+    direccion: v.direccion.trim().length >= 5 ? '' : 'Ingresa una dirección válida (mínimo 5 caracteres).',
+    metodoPago: ['DEBITO', 'CREDITO', 'TRANSFERENCIA'].includes(v.metodoPago) ? '' : 'Selecciona un método de pago.',
+  });
+  const errores = validar(valores);
+  const cambiar = (campo, valor) => setValores((v) => ({ ...v, [campo]: valor, ...(campo === 'region' ? { comuna: '' } : {}) }));
+  async function enviar(e) {
+    e.preventDefault(); setTocados(Object.fromEntries(Object.keys(inicial).map((k) => [k, true])));
+    if (Object.values(errores).some(Boolean) || carrito.length === 0 || enviando) return;
+    setEnviando(true); setError(null);
+    try {
+      const orden = await crearOrden({
+        lineas: carrito.map((l) => ({ productoId: l.productoId, cantidad: l.cantidad })),
+        cupon: cupon?.codigo ?? null,
+        metodoPago: valores.metodoPago,
+        despacho: { nombre: valores.nombre.trim(), correo: valores.correo.trim(), telefono: valores.telefono.trim(), region: ({ 'Valparaíso': 'Región de Valparaíso', 'Metropolitana de Santiago': 'Región Metropolitana de Santiago', 'Biobío': 'Región del Biobío' })[valores.region] ?? valores.region, comuna: valores.comuna, direccion: valores.direccion.trim(), depto: '', indicaciones: '' },
+      });
+      if (orden.pago?.estado !== 'RECHAZADO') vaciarCarrito();
+      navegar(`/ordenes/${orden.id}/confirmacion`, { state: { orden } });
+    } catch (err) { setError(err); }
+    finally { setEnviando(false); }
   }
-
-  // Impedir compras con carrito vacío
-  if (carrito.length === 0) {
-    return (
-      <section className="text-center py-5">
-        <h1 className="titulo-seccion">
-          Finalizar compra
-        </h1>
-
-        <p className="lead mt-4">
-          Tu carrito está vacío. No puedes continuar con el pago.
-        </p>
-
-        <Link
-          className="btn btn-primary"
-          to="/catalogo.html"
-        >
-          Ir al catálogo
-        </Link>
-      </section>
-    );
-  }
-
-  // Crear campos reutilizables
-  const campo = (
-    nombre,
-    etiqueta,
-    tipo = 'text',
-    opciones = {}
-  ) => (
-    <div className="mb-3">
-      <label
-        className="form-label"
-        htmlFor={`campo-${nombre}`}
-      >
-        {etiqueta}
-      </label>
-
-      {opciones.esSelector ? (
-        <select
-          className={`form-select${
-            formularioEnviado && !errores[nombre]
-              ? ' is-invalid'
-              : ''
-          }`}
-          id={`campo-${nombre}`}
-          name={nombre}
-          value={valores[nombre]}
-          onChange={actualizarValor}
-          disabled={opciones.disabled}
-          autoComplete={opciones.autocomplete}
-        >
-          <option value="">
-            {opciones.textoIndicador}
-          </option>
-
-          {opciones.opciones.map((opcion) => (
-            <option key={opcion} value={opcion}>
-              {opcion}
-            </option>
-          ))}
-        </select>
-      ) : (
-        <input
-          className={`form-control${
-            formularioEnviado && !errores[nombre]
-              ? ' is-invalid'
-              : ''
-          }`}
-          id={`campo-${nombre}`}
-          name={nombre}
-          type={tipo}
-          value={valores[nombre]}
-          onChange={actualizarValor}
-          maxLength={opciones.longitudMaxima}
-          autoComplete={opciones.autocomplete}
-          placeholder={opciones.textoIndicador}
-        />
-      )}
-
-      {formularioEnviado && !errores[nombre] && (
-        <div className="invalid-feedback">
-          {opciones.mensajeError}
-        </div>
-      )}
-
-      {opciones.textoAyuda && (
-        <div className="form-text">
-          {opciones.textoAyuda}
-        </div>
-      )}
-    </div>
-  );
-
-  // Formulario principal de checkout
-  return (
-    <section>
-      <h1 className="titulo-seccion mb-4">
-        Finalizar compra
-      </h1>
-
-      <div className="row g-4 align-items-start">
-
-        <FormularioCheckout
-          className="col-12 col-lg-7"
-          direccion={valores.direccion}
-          alConfirmar={manejarEnvio}
-        >
-
-          {/* Datos de despacho */}
-          <fieldset className="panel-formulario card mb-4">
-            <div className="card-body">
-              <legend className="h4 float-none w-auto px-0">
-                Datos de despacho
-              </legend>
-
-              {campo('nombre', 'Nombre completo', 'text', {
-                autocomplete: 'name',
-                textoIndicador: 'Ej: Juan Pérez',
-                mensajeError:
-                  'Ingresa tu nombre completo (mínimo 3 caracteres).'
-              })}
-
-              {campo('correo', 'Correo electrónico', 'email', {
-                autocomplete: 'email',
-                textoIndicador: 'Ej: juan@correo.cl',
-                mensajeError: 'Ingresa un correo con formato válido.'
-              })}
-
-              {campo('telefono', 'Teléfono', 'tel', {
-                autocomplete: 'tel',
-                textoIndicador: 'Ej: 912345678',
-                longitudMaxima: 9,
-                textoAyuda: '9 dígitos, sin el +56.',
-                mensajeError:
-                  'El teléfono debe tener 9 dígitos numéricos.'
-              })}
-
-              {campo('region', 'Región', 'text', {
-                esSelector: true,
-                textoIndicador: 'Selecciona una región',
-                opciones: Object.keys(regiones),
-                autocomplete: 'address-level1',
-                mensajeError: 'Selecciona una región.'
-              })}
-
-              {campo('comuna', 'Comuna', 'text', {
-                esSelector: true,
-                textoIndicador: valores.region
-                  ? 'Selecciona una comuna'
-                  : 'Primero selecciona una región',
-                opciones: comunasDisponibles,
-                disabled: !valores.region,
-                autocomplete: 'address-level2',
-                mensajeError:
-                  'Selecciona una comuna válida para esa región.'
-              })}
-
-              {campo('direccion', 'Dirección', 'text', {
-                autocomplete: 'street-address',
-                textoIndicador: 'Calle, número, depto (opcional)',
-                textoAyuda:
-                  'Incluye calle, número y referencias si es necesario.',
-                mensajeError:
-                  'Ingresa una dirección válida (mínimo 5 caracteres).'
-              })}
-            </div>
-          </fieldset>
-
-          {/* Método de pago */}
-          <fieldset className="panel-formulario card mb-4">
-            <div className="card-body">
-              <legend className="h4 float-none w-auto px-0">
-                Método de pago (simulado)
-              </legend>
-
-              {[
-                'tarjeta',
-                'transferencia',
-                'contraentrega'
-              ].map((metodoPago) => (
-                <div
-                  className="form-check mb-2"
-                  key={metodoPago}
-                >
-                  <input
-                    className="form-check-input"
-                    id={`pago-${metodoPago}`}
-                    name="pago"
-                    type="radio"
-                    value={metodoPago}
-                    checked={valores.pago === metodoPago}
-                    onChange={actualizarValor}
-                  />
-
-                  <label
-                    className="form-check-label"
-                    htmlFor={`pago-${metodoPago}`}
-                  >
-                    {metodoPago === 'tarjeta'
-                      ? 'Tarjeta de crédito / débito'
-                      : metodoPago === 'transferencia'
-                      ? 'Transferencia bancaria'
-                      : 'Pago contra-entrega'}
-                  </label>
-                </div>
-              ))}
-
-              {formularioEnviado && !errores.pago && (
-                <p className="text-danger mb-0" role="alert">
-                  Selecciona un método de pago.
-                </p>
-              )}
-            </div>
-          </fieldset>
-
-        </FormularioCheckout>
-
-        {/* Resumen de compra */}
-        <div className="col-12 col-lg-5">
-          <ResumenOrden
-            articulos={carrito}
-            totales={totales}
-          />
-        </div>
-
-      </div>
-    </section>
-  );
+  if (!carrito.length) return <section className="text-center py-5"><h1 className="titulo-seccion">Finalizar compra</h1><p className="lead">Tu carrito está vacío.</p><Link className="btn btn-primary" to="/catalogo.html">Ir al catálogo</Link></section>;
+  return <section><h1 className="titulo-seccion mb-4">Finalizar compra</h1><MensajeError error={error} />{cargandoPerfil && <Cargando texto="Cargando tus datos de despacho…" />}<div className="row g-4 align-items-start"><form className="col-12 col-lg-7" noValidate onSubmit={enviar}><fieldset className="panel-formulario card mb-4"><div className="card-body"><legend className="h4">Datos de despacho</legend>{[
+    ['nombre', 'Nombre completo', 'text', 'name'], ['correo', 'Correo electrónico', 'email', 'email'], ['telefono', 'Teléfono', 'tel', 'tel'], ['direccion', 'Dirección', 'text', 'street-address'],
+  ].map(([campo, etiqueta, tipo, autocomplete]) => <div className="mb-3" key={campo}><label className="form-label" htmlFor={`campo-${campo}`}>{etiqueta}</label><input className={`form-control ${tocados[campo] && errores[campo] ? 'is-invalid' : ''}`} id={`campo-${campo}`} type={tipo} autoComplete={autocomplete} value={valores[campo]} onChange={(e) => cambiar(campo, e.target.value)} onBlur={() => setTocados((t) => ({ ...t, [campo]: true }))} />{tocados[campo] && errores[campo] && <div className="invalid-feedback">{errores[campo]}</div>}</div>)}<div className="row"><div className="col-md-6 mb-3"><label className="form-label" htmlFor="campo-region">Región</label><select id="campo-region" className={`form-select ${tocados.region && errores.region ? 'is-invalid' : ''}`} value={valores.region} onChange={(e) => cambiar('region', e.target.value)} onBlur={() => setTocados((t) => ({ ...t, region: true }))}><option value="">Selecciona una región</option>{Object.keys(regionesValidas).map((r) => <option key={r}>{r}</option>)}</select>{tocados.region && errores.region && <div className="invalid-feedback">{errores.region}</div>}</div><div className="col-md-6 mb-3"><label className="form-label" htmlFor="campo-comuna">Comuna</label><select id="campo-comuna" className={`form-select ${tocados.comuna && errores.comuna ? 'is-invalid' : ''}`} disabled={!valores.region} value={valores.comuna} onChange={(e) => cambiar('comuna', e.target.value)} onBlur={() => setTocados((t) => ({ ...t, comuna: true }))}><option value="">Selecciona una comuna</option>{(regionesValidas[aliasRegion[valores.region] ?? valores.region] ?? regiones[valores.region] ?? []).map((c) => <option key={c}>{c}</option>)}</select>{tocados.comuna && errores.comuna && <div className="invalid-feedback">{errores.comuna}</div>}</div></div></div></fieldset><fieldset className="panel-formulario card mb-4"><div className="card-body"><legend className="h4">Método de pago simulado</legend>{[['DEBITO', 'Tarjeta de débito'], ['CREDITO', 'Tarjeta de crédito'], ['TRANSFERENCIA', 'Transferencia bancaria']].map(([value, label]) => <div className="form-check" key={value}><input className="form-check-input" type="radio" id={`pago-${value}`} name="pago" checked={valores.metodoPago === value} onChange={() => cambiar('metodoPago', value)} /><label className="form-check-label" htmlFor={`pago-${value}`}>{label}</label></div>)}</div></fieldset><button className="btn btn-primary btn-lg" type="submit" disabled={enviando}>{enviando ? 'Procesando orden…' : 'Confirmar compra'}</button></form><aside className="col-12 col-lg-5"><ResumenOrden articulos={carrito} totales={calcularTotales(carrito, cupon?.porcentaje ? cupon.porcentaje / 100 : cupon?.descuento ?? 0)} /></aside></div></section>;
 }

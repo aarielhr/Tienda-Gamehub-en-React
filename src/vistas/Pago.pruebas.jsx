@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { AuthContext } from '../context/useAuth.js';
 import { ProveedorCarrito } from '../contexto/ProveedorCarrito.jsx';
 import Pago from './Pago.jsx';
 
@@ -13,7 +14,7 @@ beforeEach(() => {
 
 describe('vista de pago', () => {
   it('valida los campos obligatorios y no registra una orden inválida', () => {
-    render(<MemoryRouter><ProveedorCarrito hijos={<Pago />} /></MemoryRouter>);
+    render(<AuthContext value={{ usuario: null, rol: null }}><MemoryRouter><ProveedorCarrito hijos={<Pago />} /></MemoryRouter></AuthContext>);
 
   const boton = screen.getByRole('button', { name: 'Confirmar compra' });
   expect(boton.disabled).toBeTrue();
@@ -33,7 +34,7 @@ fireEvent.click(boton);
   it('crea una orden con el descuento del cupón y muestra la confirmación', () => {
     localStorage.setItem('gamehub_cupon', JSON.stringify({ codigo: 'SETUP2026', descuento: 0.15 }));
     const guardar = spyOn(Storage.prototype, 'setItem').and.callThrough();
-    render(<MemoryRouter><ProveedorCarrito hijos={<Pago />} /></MemoryRouter>);
+    render(<AuthContext value={{ usuario: null, rol: null }}><MemoryRouter><ProveedorCarrito hijos={<Pago />} /></MemoryRouter></AuthContext>);
 
     fireEvent.change(screen.getByLabelText('Nombre completo'), { target: { value: 'Juan Pérez' } });
     fireEvent.change(screen.getByLabelText('Correo electrónico'), { target: { value: 'juan@correo.cl' } });
