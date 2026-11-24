@@ -1,6 +1,9 @@
 import { useEffect } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { usarCarrito } from '../contexto/ProveedorCarrito.jsx';
+import { useAuth } from '../context/useAuth.js';
+import { NOMBRE_ROL } from '../logica/estados.js';
+import AvisoSesion from '../components/AvisoSesion.jsx';
 
 const enlaces = [
   ['/', 'Inicio'],
@@ -12,6 +15,8 @@ const enlaces = [
 
 function Cabecera() {
   const { cantidadArticulos } = usarCarrito();
+  const { usuario, rol, salir } = useAuth();
+  const navegar = useNavigate();
   return (
     <>
 <div className="cinta-tienda"><div className="container"><span><i aria-hidden="true" /> TU PRÓXIMO NIVEL, AQUÍ.</span><span>HARDWARE / PERIFÉRICOS / SETUP</span></div></div>
@@ -23,13 +28,17 @@ function Cabecera() {
         </button>
         <div className="collapse navbar-collapse" id="main-navigation">
           <ul className="navbar-nav ms-auto">
-            {enlaces.map(([ruta, titulo]) => (
+            {enlaces.filter(([ruta]) => ruta !== '/checkout.html' && ruta !== '/ordenes.html').map(([ruta, titulo]) => (
               <li className="nav-item" key={ruta}>
                 <NavLink end={ruta === '/'} className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to={ruta}>
                   {titulo}{ruta === '/carrito.html' && <span className="ms-1">({cantidadArticulos})</span>}
                 </NavLink>
               </li>
             ))}
+            {rol === 'CLIENTE' && <li className="nav-item"><NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/mis-ordenes">Mis órdenes</NavLink></li>}
+            {(rol === 'OPERADOR' || rol === 'ADMIN') && <li className="nav-item"><NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/operador">Panel operador</NavLink></li>}
+            {rol === 'ADMIN' && <li className="nav-item"><NavLink className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} to="/admin">Administración</NavLink></li>}
+            {!usuario ? <li className="nav-item"><NavLink className="nav-link" to="/acceso">Ingresar / Registrarse</NavLink></li> : <li className="nav-item d-flex align-items-center gap-2"><span className="nav-link">{usuario.nombre} · {NOMBRE_ROL[rol]}</span><button className="btn btn-outline-danger btn-sm" type="button" onClick={() => { salir(); navegar('/'); }}>Cerrar sesión</button></li>}
           </ul>
         </div>
       </div>
@@ -80,6 +89,7 @@ export default function Estructura() {
     <div className="contenedor-aplicacion">
       <Cabecera />
       {aviso && <div className="container pt-3"><div className="alert alert-info alert-dismissible mb-0" role="status">{aviso}<button className="btn-close" type="button" aria-label="Cerrar" onClick={limpiarAviso} /></div></div>}
+      <AvisoSesion />
       <main className="container py-4 py-lg-5 flex-grow-1">
         <Outlet />
       </main>
