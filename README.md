@@ -15,7 +15,7 @@ npm install
 npm run dev
 ```
 
-Vite informa la dirección local, normalmente `http://localhost:5173`. Antes de ejecutar el frontend, inicia el backend siguiendo las instrucciones de su [repositorio](https://github.com/cacc92/Duoc-Fullstack2-GameHubStore-BackEnd) y comprueba que Eureka y el API Gateway estén disponibles.
+Vite informa la dirección local, normalmente `http://localhost:5173`. Antes de ejecutar el frontend, inicia el backend siguiendo las instrucciones de su [repositorio](https://github.com/Lukazez/GameHubStore-Backend-) y comprueba que Eureka y el API Gateway estén disponibles.
 
 ### Gateway
 
@@ -68,7 +68,7 @@ Las pruebas generan el reporte HTML en `coverage/html/index.html` y el resumen e
 
 ## Datos de prueba del backend
 
-Las cuentas demostrativas del backend incluyen `ana@gamehub.test` (ADMIN), `luis@gamehub.test` (OPERADOR) y `camila@gamehub.test` (CLIENTE). La contraseña inicial es `clave123` según las semillas de desarrollo. La lista de cuentas y las reglas de los pagos están en los datos semilla y el [README del backend de referencia](https://github.com/cacc92/Duoc-Fullstack2-GameHubStore-BackEnd). También puedes crear una cuenta de cliente desde `/acceso`. El método de pago es simulado por el backend, no se procesa dinero real.
+Las cuentas demostrativas del backend incluyen `ana@gamehub.test` (ADMIN), `luis@gamehub.test` (OPERADOR) y `camila@gamehub.test` (CLIENTE). La contraseña inicial es `clave123` según las semillas de desarrollo. La lista de cuentas y las reglas de los pagos están en los datos semilla y el [README del backend de referencia](https://github.com/Lukazez/GameHubStore-Backend-). También puedes crear una cuenta de cliente desde `/acceso`. El método de pago es simulado por el backend, no se procesa dinero real.
 
 ## Estado de verificación en este entorno
 

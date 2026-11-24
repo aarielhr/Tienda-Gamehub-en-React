@@ -37,9 +37,9 @@ describe('services/catalogo.js', () => {
 
     const [teclado, audifonos] = await listarProductos()
 
-    expect(teclado).toEqual({ ...TECLADO, stock: 24, puntuacion: 4.5, cantidadResenas: 2 })
+    expect(teclado).toEqual({ ...TECLADO, imagen: '/images/Teclado Ajazz AK820.avif', stock: 24, puntuacion: 4.5, cantidadResenas: 2 })
     // Los audífonos no tienen reseñas: puntaje 0, así que la tarjeta muestra «Sin reseñas todavía»
-    expect(audifonos).toEqual({ ...AUDIFONOS, stock: 3, puntuacion: 0, cantidadResenas: 0 })
+    expect(audifonos).toEqual({ ...AUDIFONOS, imagen: '/images/audifonos-andesia.jpg', stock: 3, puntuacion: 0, cantidadResenas: 0 })
   })
 
   it('si review-service no responde, el catálogo se muestra igual, sin estrellas', async () => {
@@ -80,7 +80,7 @@ describe('services/catalogo.js', () => {
       '/api/resenas/resumen?productos=6': respuesta(200, [{ productoId: 6, puntuacion: 5, cantidad: 1 }]),
     })
 
-    expect(await obtenerProducto(6)).toEqual({ ...AUDIFONOS, stock: 3, puntuacion: 5, cantidadResenas: 1 })
+    expect(await obtenerProducto(6)).toEqual({ ...AUDIFONOS, imagen: '/images/audifonos-andesia.jpg', stock: 3, puntuacion: 5, cantidadResenas: 1 })
   })
 
   it('listarResenas y listarCategorias piden la ruta de su microservicio', async () => {

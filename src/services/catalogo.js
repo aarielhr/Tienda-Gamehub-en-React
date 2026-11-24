@@ -14,12 +14,24 @@ async function completar(productos) {
     stock: porStock.get(producto.id) ?? 0,
     puntuacion: porResenas.get(producto.id)?.puntuacion ?? 0,
     cantidadResenas: porResenas.get(producto.id)?.cantidad ?? 0,
-    imagen: producto.imagen ?? ilustracionPorCategoria(producto.categoriaSlug),
+    imagen: resolverImagen(producto.imagen, producto.categoriaSlug),
     ...(producto.especificaciones !== undefined ? { especificaciones: producto.especificaciones } : {}),
   }));
 }
 
 const IMAGENES = {
+  notebook: '/images/notebook-kairo.jpg',
+  gpu: '/images/Tarjeta Gráfica ASUS RTX 4060.jpg',
+  cpu: '/images/cpu-tectra.jpg',
+  teclado: '/images/Teclado Ajazz AK820.avif',
+  mouse: '/images/mouse-ajazz.jpg',
+  audifonos: '/images/audifonos-andesia.jpg',
+  monitor: '/images/Monitor ASUS TUF 24.jpg',
+  consola: '/images/consola-austral.jpg',
+  control: '/images/control-austral.jpg',
+  ssd: '/images/ssd-tectra.jpg',
+  microfono: '/images/microfono-andesia.jpg',
+  mousepad: '/images/Pad Mouse ATK Sky XSoft.jpg',
   'Tarjeta Gráfica ASUS RTX 4060': '/images/Tarjeta Gráfica ASUS RTX 4060.jpg',
   'Teclado Ajazz AK820': '/images/Teclado Ajazz AK820.avif',
   'Mouse Ajazz 139 Pro': '/images/mouse-ajazz.jpg',
